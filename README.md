@@ -2,6 +2,14 @@
 
 A new Flutter project.
 
+## dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  english_words: ^4.0.0
+
+> remember: run `flutter pub get`
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
