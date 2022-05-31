@@ -3,9 +3,11 @@
 A new Flutter project.
 
 ## dependencies:
-  flutter:
+  flutter:\
     sdk: flutter
+
   cupertino_icons: ^1.0.2
+  
   english_words: ^4.0.0
 
 > remember: run `flutter pub get`
