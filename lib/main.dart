@@ -35,7 +35,7 @@ class _RandomWordsState extends State<RandomWords> {
   final _suggestions = <WordPair>[];
   final _biggerFont = const TextStyle(fontSize: 18);
   final _saved = <WordPair>{};
-  void _changeSaved(WordPair pair) {
+  void _removedSaved(WordPair pair) {
     setState(() {
       _saved.remove(pair);
     });
@@ -82,11 +82,14 @@ class _RandomWordsState extends State<RandomWords> {
     //     ),
     //   );
     // }));
-    Navigator.of(context).push(MaterialPageRoute(
+    Navigator.of(context).push(
+      MaterialPageRoute(
         builder: (context) => SavedSuggestions(
-              saved: _saved,
-              changeSaved: _changeSaved,
-            )));
+          saved: _saved,
+          removedSaved: _removedSaved,
+        ),
+      ),
+    );
   }
 
   @override
@@ -150,9 +153,9 @@ class _RandomWordsState extends State<RandomWords> {
 
 class SavedSuggestions extends StatefulWidget {
   final Set<WordPair> saved;
-  final Function changeSaved;
+  final Function removedSaved;
   const SavedSuggestions(
-      {Key? key, required this.saved, required this.changeSaved})
+      {Key? key, required this.saved, required this.removedSaved})
       : super(key: key);
 
   @override
@@ -161,18 +164,16 @@ class SavedSuggestions extends StatefulWidget {
 
 class _SavedSuggestionsState extends State<SavedSuggestions> {
   final TextStyle _biggerfont = const TextStyle(fontSize: 18.0);
-  @override
-  Widget build(BuildContext context) {
-    final Iterable<ListTile> tiles = widget.saved.map(
-      (pair) {
-        return ListTile(
-          title: Text(
-            pair.asPascalCase,
-            style: _biggerfont,
-          ),
-          onTap: () {
+  showAlertDialog(BuildContext context, WordPair pair) {
+    AlertDialog dialog = AlertDialog(
+      title: Text("Remove From Saved Suggestions?"),
+      content: Text(
+          "Are you sure to remove '${pair.asPascalCase}' from saved suggestions?"),
+      actions: [
+        ElevatedButton(
+          onPressed: () {
             setState(() {
-              widget.changeSaved(pair);
+              widget.removedSaved(pair);
             });
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               content: Text(
@@ -185,6 +186,32 @@ class _SavedSuggestionsState extends State<SavedSuggestions> {
                 milliseconds: 500,
               ),
             ));
+            Navigator.pop(context);
+          },
+          child: Text("Yes"),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text("No"),
+        ),
+      ],
+    );
+    showDialog(context: context, builder: (BuildContext context) => dialog);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final Iterable<ListTile> tiles = widget.saved.map(
+      (pair) {
+        return ListTile(
+          title: Text(
+            pair.asPascalCase,
+            style: _biggerfont,
+          ),
+          onTap: () {
+            showAlertDialog(context, pair);
           },
         );
       },
